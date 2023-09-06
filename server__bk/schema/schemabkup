@@ -1,0 +1,80 @@
+//  import  {GraphQLObjectType,GraphQLString,GraphQLSchema,GraphQLID,GraphQLNonNull,GraphQLList, GraphQLFloat} from 'graphql';
+// const EventModal=require('../models/schema');
+// // const events: { _id:string,
+// //     title:string,
+// //     description:string,
+// //     price:number,
+// //      date: string}[]=[];
+
+
+// interface IDocument {
+//     [key: string]: any;
+//   }
+// const EventType=new GraphQLObjectType({
+//     name: 'Event',
+//     fields: {
+//         _id: {type: new GraphQLNonNull(GraphQLID)},
+//         title: {type: new GraphQLNonNull(GraphQLString)},
+//         description: {type: new GraphQLNonNull(GraphQLString)},
+//         price: {type: new GraphQLNonNull(GraphQLFloat)},
+//         date:{type: new GraphQLNonNull(GraphQLString)}
+//     },
+// });
+// const query=new GraphQLObjectType({
+//     name: 'RootQueryType',
+//     fields: {
+//         events: {
+//             // GraphQLList will instruct to Graphql give us that type (EventType) array of object
+//             type: new GraphQLList(EventType),
+//             // the purpose of resolve function is to actually go reach out and grab that real data
+//             async resolve()
+//             {
+//                 // return events;
+//                 return await EventModal.find({}).then((res:IDocument[]) =>
+//                     res?.map(event =>{
+//                         return {...event._doc};
+//                     })
+//                 ).catch((err:any) =>{
+//                     console.log(err);
+//                     throw err;
+//                 })
+//             }
+//         }
+//     }
+// });
+// const mutation=new GraphQLObjectType({
+//     name: 'Mutation',
+//     fields: {
+//         creatEvent: {
+//             type: EventType,
+//             args: {
+//                 title: {type: new GraphQLNonNull(GraphQLString)},
+//                 description: {type: new GraphQLNonNull(GraphQLString)},
+//                 price: {type: new GraphQLNonNull(GraphQLFloat)},
+//                 date: {type: new GraphQLNonNull(GraphQLString)}
+//             },
+//             async resolve(parentValue: any,{title,description,price,date}: {title: string,description: string,price: number,date: string;})
+//             {
+//                 //  const event={
+//                 //     _id:Math.random().toString(),
+//                 //     title,
+//                 //     description,
+//                 //     price,
+//                 //      date: new Date().toISOString()
+//                 //  }
+//                 // events.push(event);
+//                 const event=new EventModal({
+//                     title: title,
+//                     description: description,
+//                     price: price,
+//                     date: new Date(date)
+//                 });
+//                 return await event.save().then((res: IDocument) => {console.log(res); return {...res._doc};}).catch((err: any) => {console.log(err);throw err});
+//             }
+//         }
+//     }
+// });
+// module.exports=new GraphQLSchema({
+//     query,
+//     mutation
+// })
