@@ -1,71 +1,87 @@
-import {createContext,useState,useEffect,FC,useCallback} from 'react'
-import { useNavigate } from 'react-router-dom'
-import { AuthContextState,IAuth } from './types'
+import {
+  createContext,
+  useState,
+  useEffect,
+  FC,
+  useCallback,
+  ReactNode,
+} from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContextState, IAuth } from "./types";
 
-const contextDefaultValues: AuthContextState={
-  authDetail:{
+const contextDefaultValues: AuthContextState = {
+  authDetail: {
     token: "",
     userId: "",
-    tokenExpiration:0
+    tokenExpiration: 0,
   },
-  login: () => { },
-  register:()=>{},
-  logout:()=>{},
-}
+  login: () => {},
+  register: () => {},
+  logout: () => {},
+};
 
 export const AuthContext = createContext<AuthContextState>(
-  contextDefaultValues,
-)
+  contextDefaultValues
+);
+interface Props {
+  children: ReactNode;
+}
 
-const AuthProvider: FC=({children}) =>
-{
-  const navigate=useNavigate();
-  const [authDetail,setAuthDetail]=useState<IAuth>(contextDefaultValues?.authDetail)
-  const login=useCallback(async (requestBody: object) =>
-  {
-    const res=await fetch('http://localhost:4000/graphql',{
+const AuthProvider: FC<Props> = ({ children }): JSX.Element => {
+  const navigate = useNavigate();
+  const [authDetail, setAuthDetail] = useState<IAuth>(
+    contextDefaultValues?.authDetail
+  );
+  const login = useCallback(async (requestBody: object) => {
+    const res = await fetch("http://localhost:4000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     });
-    const resBody=await res.json();
-    let obj={
+    const resBody = await res.json();
+    let obj = {
       userId: resBody?.data?.login?.userId,
       token: resBody?.data?.login?.token,
-      tokenExpiration: resBody?.data?.login?.tokenExpiration
+      tokenExpiration: resBody?.data?.login?.tokenExpiration,
     };
     setAuthDetail(obj);
-     const authDetailLocal: IAuth=JSON.parse(localStorage.getItem('authDetailLocal')||"{}")
+    const authDetailLocal: IAuth = JSON.parse(
+      localStorage.getItem("authDetailLocal") || "{}"
+    );
     if (!!authDetailLocal) {
-      localStorage.setItem('authDetailLocal', JSON.stringify(obj))
+      localStorage.setItem("authDetailLocal", JSON.stringify(obj));
     }
     // localStorage.setItem('authDetailLocal', JSON.stringify(obj))
-  },[]);
-  const register=useCallback(async (requestBody:object) =>
-  {
-      // const res=await fetch('http://localhost:4000/graphql',{
-      //       method: "POST",
-      //       body: JSON.stringify(requestBody),
-      //       headers: {
-      //           "Content-Type": "application/json"
-      //       }
-      //   });
-        // const resBody=await res.json();
-  },[])
-  const logout=() => {
-    localStorage.removeItem('authDetailLocal');    
-    setAuthDetail(contextDefaultValues?.authDetail)
-    navigate('/auth')
-  }
+  }, []);
+  const register = useCallback(async (requestBody: object) => {
+    // const res=await fetch('http://localhost:4000/graphql',{
+    //       method: "POST",
+    //       body: JSON.stringify(requestBody),
+    //       headers: {
+    //           "Content-Type": "application/json"
+    //       }
+    //   });
+    // const resBody=await res.json();
+  }, []);
+  const logout = () => {
+    localStorage.removeItem("authDetailLocal");
+    setAuthDetail(contextDefaultValues?.authDetail);
+    navigate("/auth");
+  };
 
   useEffect(() => {
-    const authDetailLocal: IAuth=JSON.parse(localStorage.getItem('authDetailLocal')||"{}")
-    if(!!!authDetail?.token?.length && Object.values(authDetailLocal)?.length ) {
-      setAuthDetail(authDetailLocal)
+    const authDetailLocal: IAuth = JSON.parse(
+      localStorage.getItem("authDetailLocal") || "{}"
+    );
+    if (
+      !!!authDetail?.token?.length &&
+      Object.values(authDetailLocal)?.length
+    ) {
+      setAuthDetail(authDetailLocal);
     }
-  }, [authDetail])
+  }, [authDetail]);
 
   return (
     <AuthContext.Provider
@@ -78,7 +94,7 @@ const AuthProvider: FC=({children}) =>
     >
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
-export default AuthProvider
+export default AuthProvider;
